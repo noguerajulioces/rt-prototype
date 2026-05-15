@@ -1,65 +1,84 @@
-import Image from "next/image";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { RaceTrackerMark } from "@/components/RaceTrackerLogo";
+import { races } from "@/lib/mock-data";
+
+export const metadata: Metadata = {
+  title: "RaceTracker · Seguimiento en vivo de carreras",
+  description:
+    "Sigue carreras de trail running, ultra y triatlón en tiempo real. Mira la posición de tus corredores favoritos durante toda la carrera.",
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "RaceTracker",
+    description:
+      "Seguimiento en vivo de carreras de trail running, ultra y triatlón.",
+    type: "website",
+    siteName: "RaceTracker",
+  },
+};
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="h-full overflow-y-auto">
+      <div className="mx-auto max-w-3xl px-6 py-16 space-y-10">
+        <header>
+          <div className="flex items-center gap-2 text-primary">
+            <RaceTrackerMark className="h-7 w-7" />
+            <span className="text-base font-extrabold tracking-tight">
+              RaceTracker
+            </span>
+          </div>
+          <h1 className="mt-6 text-4xl font-semibold tracking-tight sm:text-5xl">
+            Seguimiento en vivo
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mt-3 max-w-xl text-muted-foreground">
+            Sigue a tus corredores en tiempo real durante carreras de trail
+            running, ultra y triatlón en Noruega y el resto del mundo.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        </header>
+
+        <section>
+          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+            Carreras
+          </h2>
+          <ul className="space-y-2">
+            {races.map((r) => (
+              <li key={r.slug}>
+                <Link
+                  href={`/races/${r.slug}`}
+                  className="block rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/50 hover:bg-accent/30"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <div className="text-lg font-semibold">
+                        {r.name}{" "}
+                        <span className="font-mono text-muted-foreground">
+                          {r.edition}
+                        </span>
+                      </div>
+                      <div className="mt-1 text-sm text-muted-foreground">
+                        {r.location}
+                      </div>
+                    </div>
+                    <div className="text-right text-xs text-muted-foreground tabular">
+                      <div>{r.date}</div>
+                      <div className="mt-1">
+                        {r.distance} km · {r.elevationGain} m D+
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        <footer className="border-t border-border pt-6 text-xs text-muted-foreground">
+          ¿Sos organizador de una carrera?{" "}
+          <span className="text-foreground">Contactanos</span> para sumar tu
+          evento a la plataforma.
+        </footer>
+      </div>
     </div>
   );
 }
