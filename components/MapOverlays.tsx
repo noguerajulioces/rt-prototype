@@ -3,8 +3,15 @@
 import { Cloud, Wind } from "lucide-react";
 import { checkpoints, race, rankedRunners } from "@/lib/mock-data";
 import { useCourse } from "./CourseContext";
+import { cn } from "@/lib/utils";
 
-export function MapOverlays() {
+export function MapOverlays({
+  /* When the sidebar-open chevron is visible at left-3 top-3, the overlays
+     shift right so they don't overlap. */
+  insetLeft = false,
+}: {
+  insetLeft?: boolean;
+} = {}) {
   const { selectedCourseId } = useCourse();
   const ranked = rankedRunners(selectedCourseId ?? undefined);
   const leader = ranked.find((r) => r.status === "running") ?? ranked[0];
@@ -13,7 +20,12 @@ export function MapOverlays() {
     : null;
 
   return (
-    <div className="pointer-events-none absolute left-3 top-3 z-10 flex flex-col gap-2">
+    <div
+      className={cn(
+        "pointer-events-none absolute top-3 z-10 flex flex-col gap-2 transition-[left] duration-200",
+        insetLeft ? "left-14" : "left-3",
+      )}
+    >
       <div className="rt-mono pointer-events-auto inline-flex items-center gap-2 rounded-full border border-line-soft bg-bg2/90 px-3 py-1.5 text-[11px] font-semibold text-fg2 tabular shadow-[0_4px_12px_-4px_rgba(0,0,0,0.4)] backdrop-blur">
         <Cloud className="h-3.5 w-3.5" />
         <span>{race.weather.tempC}°</span>

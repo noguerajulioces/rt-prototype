@@ -94,7 +94,7 @@ function DesktopLayout({
 }) {
   const { t } = useT();
   const [tab, setTab] = useState<RailTab>("participants");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex min-h-0 flex-1">
@@ -118,7 +118,7 @@ function DesktopLayout({
             favourites={favourites}
             onRunnerDetails={onRunnerClick}
           />
-          <MapOverlays />
+          <MapOverlays insetLeft={!sidebarOpen} />
           {!sidebarOpen && (
             <Button
               variant="outline"

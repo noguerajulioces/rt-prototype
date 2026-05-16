@@ -32,7 +32,7 @@ const defaultSettings: Settings = {
   imperial: false,
   showAllNames: false,
   showRunnersOnProfile: false,
-  showElevation: true,
+  showElevation: false,
   showRouteDirection: true,
 };
 
