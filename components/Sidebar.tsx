@@ -1,27 +1,20 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search, ChevronLeft, Filter, X } from "lucide-react";
+import { Search, ChevronLeft, Flag, Trophy, X, Star } from "lucide-react";
 import {
   checkpoints,
   rankedRunners,
   runnerKmAtTime,
-  runners,
   type Runner,
 } from "@/lib/mock-data";
 import { flagEmoji, formatDuration } from "@/lib/format";
 import { useReplay } from "./ReplayContext";
 import { useT } from "./LocaleContext";
+import { useCourse } from "./CourseContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { SettingsContent } from "./SettingsContent";
 import type { RailTab } from "./IconRail";
@@ -121,13 +114,16 @@ export function ParticipantsPanel({
 }) {
   const { raceTime } = useReplay();
   const { t } = useT();
+  const { selectedCourseId } = useCourse();
   const [search, setSearch] = useState("");
   const [filters, setFilters] = useState<Filters>(defaultFilters);
-  const activeFilters =
-    (filters.status !== "all" ? 1 : 0) + (filters.gender !== "all" ? 1 : 0);
+  const allRanked = useMemo(
+    () => rankedRunners(selectedCourseId ?? undefined),
+    [selectedCourseId],
+  );
 
   const list = useMemo(() => {
-    return rankedRunners().filter((r) => {
+    return allRanked.filter((r) => {
       if (filters.status === "running" && r.status !== "running") return false;
       if (filters.status === "finished" && r.status !== "finished")
         return false;
@@ -142,85 +138,129 @@ export function ParticipantsPanel({
         return false;
       return true;
     });
-  }, [search, filters]);
+  }, [allRanked, search, filters]);
+
+  const counts = {
+    all: allRanked.length,
+    running: allRanked.filter((r) => r.status === "running").length,
+    finished: allRanked.filter((r) => r.status === "finished").length,
+    dnf: allRanked.filter((r) => r.status === "dnf").length,
+  };
+
+  const statusFilters: { key: Filters["status"]; label: string }[] = [
+    { key: "all", label: t("filter.all") },
+    { key: "running", label: t("filter.running") },
+    { key: "finished", label: t("filter.finished") },
+    { key: "dnf", label: t("filter.dnf") },
+  ];
 
   return (
     <>
-      <div className="flex items-center gap-2 px-3 py-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="search"
-            placeholder={t("sidebar.search.placeholder")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-8 pl-8 text-sm"
-          />
-        </div>
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="h-8 gap-1.5">
-              <Filter className="h-3.5 w-3.5" />
-              {t("sidebar.filter")}
-              {activeFilters > 0 && (
-                <Badge
-                  variant="default"
-                  className="ml-1 h-4 min-w-4 rounded-full px-1 text-[10px]"
-                >
-                  {activeFilters}
-                </Badge>
-              )}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent align="end" className="w-60 p-3">
-            <FilterGroup
-              label={t("filter.status")}
-              value={filters.status}
-              onChange={(v) =>
-                setFilters((f) => ({ ...f, status: v as Filters["status"] }))
-              }
-              options={[
-                { key: "all", label: t("filter.all") },
-                { key: "running", label: t("filter.running") },
-                { key: "finished", label: t("filter.finished") },
-                { key: "dnf", label: t("filter.dnf") },
-              ]}
+      <div className="border-b border-line-soft px-3 pb-3 pt-2">
+        <div className="flex items-center gap-2">
+          <div className="flex flex-1 items-center gap-2 rounded-xl border border-line-soft bg-bg2 px-3 py-2">
+            <Search className="h-3.5 w-3.5 text-fg3" />
+            <Input
+              type="search"
+              placeholder={t("sidebar.search.placeholder")}
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="h-auto flex-1 border-0 bg-transparent p-0 text-[13px] shadow-none focus-visible:ring-0"
             />
-            <div className="mt-3" />
-            <FilterGroup
-              label={t("filter.gender")}
-              value={filters.gender}
-              onChange={(v) =>
-                setFilters((f) => ({ ...f, gender: v as Filters["gender"] }))
-              }
-              options={[
-                { key: "all", label: t("filter.all") },
-                { key: "M", label: t("filter.male") },
-                { key: "F", label: t("filter.female") },
-              ]}
-            />
-            {activeFilters > 0 && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mt-3 h-7 w-full text-xs text-muted-foreground"
-                onClick={() => setFilters(defaultFilters)}
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                aria-label={t("sidebar.clearFilters")}
+                className="rt-press text-fg3 hover:text-foreground"
               >
-                <X className="mr-1 h-3 w-3" /> {t("sidebar.clearFilters")}
-              </Button>
+                <X className="h-3.5 w-3.5" />
+              </button>
             )}
-          </PopoverContent>
-        </Popover>
-      </div>
-      <div className="grid grid-cols-[28px_36px_1fr_auto_56px] items-center gap-2 border-y border-border bg-muted/30 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-        <span />
-        <span>{t("sidebar.cols.pos")}</span>
-        <span>{t("sidebar.cols.name")}</span>
-        <span className="text-right">{t("sidebar.cols.km")}</span>
-        <span className="text-right">{t("sidebar.cols.time")}</span>
+          </div>
+        </div>
+
+        <div
+          className="mt-2 flex gap-1.5 overflow-x-auto"
+          role="tablist"
+          aria-label={t("filter.status")}
+        >
+          {statusFilters.map((s) => {
+            const active = filters.status === s.key;
+            return (
+              <button
+                key={s.key}
+                type="button"
+                role="tab"
+                aria-selected={active}
+                onClick={() =>
+                  setFilters((f) => ({ ...f, status: s.key }))
+                }
+                className={cn(
+                  "rt-press inline-flex shrink-0 items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11.5px] font-semibold",
+                  active
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-line-soft bg-bg2 text-fg2 hover:text-foreground",
+                )}
+              >
+                {s.label}
+                <span
+                  className={cn(
+                    "rt-mono inline-flex min-w-[1.25rem] justify-center rounded-full px-1 text-[10px] tabular",
+                    active
+                      ? "bg-black/20 text-primary-foreground"
+                      : "bg-bg3 text-fg3",
+                  )}
+                >
+                  {counts[s.key]}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-2 flex items-center gap-2">
+          <div
+            className="inline-flex rounded-xl border border-line-soft bg-bg2 p-0.5"
+            role="tablist"
+            aria-label={t("filter.gender")}
+          >
+            {([
+              { key: "all", label: t("filter.all") },
+              { key: "M", label: t("filter.male") },
+              { key: "F", label: t("filter.female") },
+            ] as const).map((g) => {
+              const active = filters.gender === g.key;
+              return (
+                <button
+                  key={g.key}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() =>
+                    setFilters((f) => ({
+                      ...f,
+                      gender: g.key as Filters["gender"],
+                    }))
+                  }
+                  className={cn(
+                    "rt-press rounded-lg px-2.5 py-1 text-[11.5px] font-semibold",
+                    active ? "bg-bg4 text-foreground" : "text-fg3",
+                  )}
+                >
+                  {g.label}
+                </button>
+              );
+            })}
+          </div>
+          <span className="flex-1" />
+          <span className="rt-mono text-[11px] tabular text-fg3">
+            {list.length}/{allRanked.length}
+          </span>
+        </div>
       </div>
       <ScrollArea className="flex-1">
-        <ul className="divide-y divide-border">
+        <ul className="px-2 pb-2">
           {list.map((r, i) => (
             <ParticipantRow
               key={r.id}
@@ -233,14 +273,14 @@ export function ParticipantsPanel({
             />
           ))}
           {list.length === 0 && (
-            <li className="px-3 py-8 text-center text-sm text-muted-foreground">
+            <li className="px-3 py-10 text-center text-sm text-fg3">
               {t("sidebar.empty")}
             </li>
           )}
         </ul>
       </ScrollArea>
       <div className="border-t border-border px-3 py-2 text-[11px] text-muted-foreground">
-        {t("sidebar.count", { n: list.length, total: runners.length })}
+        {t("sidebar.count", { n: list.length, total: allRanked.length })}
       </div>
     </>
   );
@@ -263,80 +303,94 @@ function ParticipantRow({
 }) {
   const { t } = useT();
   const km = runnerKmAtTime(runner, raceTime);
-  return (
-    <li
-      className={cn(
-        "grid grid-cols-[28px_36px_1fr_auto_56px] items-center gap-2 px-3 py-2 text-sm transition-colors hover:bg-accent/40",
-        isFavourite && "bg-accent/30",
-      )}
-    >
-      <Checkbox
-        checked={isFavourite}
-        onCheckedChange={onFavouriteToggle}
-        aria-label={t("sidebar.follow", { name: runner.name })}
-      />
-      <span className="font-mono text-xs font-semibold tabular text-muted-foreground">
-        {runner.status === "dnf" ? "—" : position}
-      </span>
-      <button
-        type="button"
-        onClick={onClick}
-        className="flex min-w-0 flex-col items-start text-left hover:underline"
-      >
-        <span className="flex items-center gap-1.5">
-          <span className="text-base leading-none">{flagEmoji(runner.country)}</span>
-          <span className="truncate font-medium">{runner.name}</span>
-        </span>
-        <span className="text-[10px] text-muted-foreground tabular">
-          #{runner.bib} · {runner.category} · {runner.ageGroup}
-        </span>
-      </button>
-      <span className="text-right font-mono text-xs tabular text-muted-foreground">
-        {km === null ? "—" : km.toFixed(1)}
-      </span>
-      <span className="text-right font-mono text-[11px] tabular">
-        {formatDuration(runner.elapsedSeconds)}
-      </span>
-    </li>
-  );
-}
+  const dotColor =
+    runner.status === "running"
+      ? "var(--running)"
+      : runner.status === "finished"
+        ? "var(--finish)"
+        : runner.status === "dnf"
+          ? "var(--danger)"
+          : "var(--fg3)";
+  const isLeader = position === 1 && runner.status !== "dnf";
 
-function FilterGroup({
-  label,
-  value,
-  onChange,
-  options,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  options: { key: string; label: string }[];
-}) {
   return (
-    <div>
-      <div className="mb-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-        {label}
+    <li>
+      <div
+        className={cn(
+          "rt-press group relative my-0.5 grid grid-cols-[26px_38px_1fr_auto_30px] items-center gap-2.5 rounded-xl border px-2 py-2.5 text-sm",
+          isFavourite
+            ? "border-[color-mix(in_oklch,var(--accent-color),transparent_70%)] bg-[color-mix(in_oklch,var(--accent-color),transparent_92%)]"
+            : "border-transparent hover:bg-bg2",
+        )}
+      >
+        <span
+          className={cn(
+            "rt-mono text-center text-[12px] font-bold tabular",
+            isLeader ? "text-primary" : position <= 3 ? "text-fg" : "text-fg3",
+          )}
+        >
+          {runner.status === "dnf" ? "—" : position}
+        </span>
+
+        <span aria-hidden className="rt-bib rt-bib--sm">
+          {runner.bib}
+        </span>
+
+        <button
+          type="button"
+          onClick={onClick}
+          className="flex min-w-0 flex-col items-start text-left"
+        >
+          <span className="flex items-center gap-1.5 text-[13.5px] font-semibold text-foreground">
+            <span aria-hidden className="text-[12px] leading-none">
+              {flagEmoji(runner.country)}
+            </span>
+            <span className="max-w-[160px] truncate">{runner.name}</span>
+          </span>
+          <span className="rt-mono mt-0.5 flex items-center gap-1.5 text-[10.5px] text-fg3">
+            <span
+              aria-hidden
+              className={cn(
+                "inline-block h-[5px] w-[5px] rounded-full",
+                runner.status === "running" && "rt-blink",
+              )}
+              style={{ background: dotColor }}
+            />
+            #{runner.bib} · {runner.category} {runner.ageGroup.slice(1)}
+            {runner.club ? ` · ${runner.club}` : ""}
+          </span>
+        </button>
+
+        <div className="flex flex-col items-end gap-px">
+          <span className="rt-mono text-[12px] font-semibold tabular text-foreground">
+            {formatDuration(runner.elapsedSeconds)}
+          </span>
+          <span className="rt-mono text-[10px] tabular text-fg3">
+            km {km === null ? "—" : km.toFixed(1)}
+          </span>
+        </div>
+
+        <button
+          type="button"
+          onClick={onFavouriteToggle}
+          className={cn(
+            "rt-press inline-flex h-7 w-7 items-center justify-center rounded-full",
+            isFavourite ? "text-primary" : "text-fg3 hover:text-foreground",
+          )}
+          aria-label={t("sidebar.follow", { name: runner.name })}
+          aria-pressed={isFavourite}
+        >
+          <Star className={cn("h-4 w-4", isFavourite && "fill-current")} />
+        </button>
       </div>
-      <div className="grid grid-cols-2 gap-1">
-        {options.map((o) => (
-          <Button
-            key={o.key}
-            variant={value === o.key ? "default" : "outline"}
-            size="sm"
-            className="h-7 text-xs"
-            onClick={() => onChange(o.key)}
-          >
-            {o.label}
-          </Button>
-        ))}
-      </div>
-    </div>
+    </li>
   );
 }
 
 export function StatsPanel() {
   const { t } = useT();
-  const ranked = rankedRunners();
+  const { selectedCourseId } = useCourse();
+  const ranked = rankedRunners(selectedCourseId ?? undefined);
   const running = ranked.filter((r) => r.status === "running").length;
   const finished = ranked.filter((r) => r.status === "finished").length;
   const dnf = ranked.filter((r) => r.status === "dnf").length;
@@ -403,36 +457,85 @@ export function StatsPanel() {
   );
 }
 
+type HistoryEvent = {
+  at: string;
+  text: string;
+  kind: "flag" | "trophy" | "dnf";
+};
+
 export function HistoryPanel() {
   const { t } = useT();
-  const events = [
-    { at: "4:01:30", text: t("history.event.crossesCp", { name: "Sigrid Halvorsen", cp: "CP5 Lutvann" }) },
-    { at: "3:58:14", text: t("history.event.finishes", { name: "Lars Sundby", rank: 1 }) },
-    { at: "3:44:18", text: t("history.event.crossesCp", { name: "Erik Vinter", cp: "CP5 Lutvann" }) },
-    { at: "3:32:40", text: t("history.event.crossesCp", { name: "Anders Lund", cp: "CP4 Sandbakken" }) },
-    { at: "3:28:14", text: t("history.event.crossesCp", { name: "Magnus Eriksen", cp: "CP4 Sandbakken" }) },
-    { at: "3:14:22", text: t("history.event.crossesCp", { name: "Maria Kowalski", cp: "CP3 Heia" }) },
-    { at: "3:07:50", text: t("history.event.crossesCp", { name: "Tobias Berg", cp: "CP3 Heia" }) },
-    { at: "2:22:05", text: t("history.event.crossesCp", { name: "Linn Mathisen", cp: "CP2 Mariholtet" }) },
-    { at: "1:58:41", text: t("history.event.dnf", { name: "Sofia Andersson", cp: "CP2 Mariholtet" }) },
-    { at: "1:12:41", text: t("history.event.crossesCp", { name: "Johan Dahl", cp: "CP1 Skullerudåsen" }) },
+  const events: HistoryEvent[] = [
+    { at: "4:01:30", text: t("history.event.crossesCp", { name: "Sigrid Halvorsen", cp: "CP5 Lutvann" }), kind: "flag" },
+    { at: "3:58:14", text: t("history.event.finishes", { name: "Lars Sundby", rank: 1 }), kind: "trophy" },
+    { at: "3:44:18", text: t("history.event.crossesCp", { name: "Erik Vinter", cp: "CP5 Lutvann" }), kind: "flag" },
+    { at: "3:32:40", text: t("history.event.crossesCp", { name: "Anders Lund", cp: "CP4 Sandbakken" }), kind: "flag" },
+    { at: "3:28:14", text: t("history.event.crossesCp", { name: "Magnus Eriksen", cp: "CP4 Sandbakken" }), kind: "flag" },
+    { at: "3:14:22", text: t("history.event.crossesCp", { name: "Maria Kowalski", cp: "CP3 Heia" }), kind: "flag" },
+    { at: "3:07:50", text: t("history.event.crossesCp", { name: "Tobias Berg", cp: "CP3 Heia" }), kind: "flag" },
+    { at: "2:22:05", text: t("history.event.crossesCp", { name: "Linn Mathisen", cp: "CP2 Mariholtet" }), kind: "flag" },
+    { at: "1:58:41", text: t("history.event.dnf", { name: "Sofia Andersson", cp: "CP2 Mariholtet" }), kind: "dnf" },
+    { at: "1:12:41", text: t("history.event.crossesCp", { name: "Johan Dahl", cp: "CP1 Skullerudåsen" }), kind: "flag" },
   ];
+
   return (
     <ScrollArea className="flex-1">
-      <ol className="space-y-2 p-3">
-        {events.map((e, i) => (
-          <li
-            key={i}
-            className="grid grid-cols-[64px_1fr] items-baseline gap-2 text-sm"
-          >
-            <span className="font-mono text-[11px] tabular text-muted-foreground">
-              {e.at}
-            </span>
-            <span>{e.text}</span>
-          </li>
-        ))}
-      </ol>
+      <div className="px-3 py-3">
+        <div className="mb-2 text-[10.5px] font-bold uppercase tracking-[0.1em] text-fg3">
+          Últimos eventos
+        </div>
+        <ol className="relative m-0 list-none p-0">
+          <span
+            aria-hidden
+            className="absolute bottom-1.5 left-[17px] top-1.5 w-px bg-line-soft"
+          />
+          {events.map((e, i) => (
+            <HistoryItem key={`${e.at}-${i}`} event={e} index={i} />
+          ))}
+        </ol>
+      </div>
     </ScrollArea>
+  );
+}
+
+function HistoryItem({
+  event,
+  index,
+}: {
+  event: HistoryEvent;
+  index: number;
+}) {
+  const color =
+    event.kind === "dnf"
+      ? "var(--danger)"
+      : event.kind === "trophy"
+        ? "var(--accent-color)"
+        : "var(--running)";
+  const Icon = event.kind === "dnf" ? X : event.kind === "trophy" ? Trophy : Flag;
+  return (
+    <li
+      className="rt-fade-in relative grid grid-cols-[34px_1fr] gap-3 py-1.5"
+      style={{ animationDelay: `${index * 30}ms` }}
+    >
+      <div
+        className="z-[1] inline-flex h-[34px] w-[34px] items-center justify-center rounded-full border"
+        style={{
+          color,
+          background: `color-mix(in oklch, ${color}, transparent 80%)`,
+          borderColor: `color-mix(in oklch, ${color}, transparent 60%)`,
+        }}
+      >
+        <Icon className="h-[15px] w-[15px]" strokeWidth={2} />
+      </div>
+      <div className="min-w-0 pt-[5px]">
+        <div className="text-[13px] leading-[1.35] text-foreground">
+          {event.text}
+        </div>
+        <div className="rt-mono mt-0.5 text-[10.5px] tabular text-fg3">
+          T+{event.at}
+        </div>
+      </div>
+    </li>
   );
 }
 

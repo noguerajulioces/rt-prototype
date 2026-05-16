@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { LocaleProvider } from "@/components/LocaleContext";
 import { SettingsProvider } from "@/components/SettingsContext";
 import { ReplayProvider } from "@/components/ReplayContext";
+import { CourseProvider } from "@/components/CourseContext";
 import { race } from "@/lib/mock-data";
 
 const geistSans = Geist({
@@ -13,8 +14,8 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
 });
 
@@ -32,16 +33,18 @@ export default function RootLayout({
     <html
       lang={race.defaultLocale}
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="h-full bg-background text-foreground overflow-hidden">
         <ThemeProvider>
           <LocaleProvider defaultLocale={race.defaultLocale}>
             <SettingsProvider>
               <ReplayProvider>
-                <TooltipProvider delayDuration={200}>
-                  {children}
-                </TooltipProvider>
+                <CourseProvider courses={race.courses}>
+                  <TooltipProvider delayDuration={200}>
+                    {children}
+                  </TooltipProvider>
+                </CourseProvider>
               </ReplayProvider>
             </SettingsProvider>
           </LocaleProvider>

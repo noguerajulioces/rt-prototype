@@ -4,110 +4,150 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* RaceTracker Redesign — oklch palette, dark-first
+   Mirrors design tokens from racetracker-redesign.html (DARK_TOKENS / LIGHT_TOKENS). */
+
 :root {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
+  /* Light mode tokens (mapped to shadcn variable names) */
+  --bg: oklch(0.985 0.003 258);
+  --bg2: oklch(0.965 0.006 258);
+  --bg3: oklch(0.935 0.008 258);
+  --bg4: oklch(0.905 0.010 258);
+  --line: oklch(0.885 0.010 258);
+  --line-soft: oklch(0.925 0.008 258);
+  --fg: oklch(0.18 0.015 258);
+  --fg2: oklch(0.42 0.018 258);
+  --fg3: oklch(0.60 0.016 258);
+  --accent-color: oklch(0.40 0.21 264);
+  --accent-color-fg: oklch(0.99 0.005 258);
 
-  --card: #ffffff;
-  --card-foreground: #0a0a0a;
+  --running: oklch(0.56 0.18 152);
+  --finish: oklch(0.58 0.14 198);
+  --dnf: oklch(0.65 0.014 258);
+  --warn: oklch(0.72 0.16 60);
+  --danger: oklch(0.58 0.20 25);
 
-  --popover: #ffffff;
-  --popover-foreground: #0a0a0a;
+  /* shadcn / app variable surface */
+  --background: var(--bg);
+  --foreground: var(--fg);
 
-  --primary: #0033a0;
-  --primary-foreground: #ffffff;
+  --card: var(--bg2);
+  --card-foreground: var(--fg);
 
-  --secondary: #f4f4f5;
-  --secondary-foreground: #0a0a0a;
+  --popover: var(--bg);
+  --popover-foreground: var(--fg);
 
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
+  --primary: var(--accent-color);
+  --primary-foreground: var(--accent-color-fg);
 
-  --accent: #fef3c7;
-  --accent-foreground: #422006;
+  --secondary: var(--bg2);
+  --secondary-foreground: var(--fg);
 
-  --destructive: #dc2626;
-  --destructive-foreground: #ffffff;
+  --muted: var(--bg3);
+  --muted-foreground: var(--fg3);
 
-  --border: #e4e4e7;
-  --input: #e4e4e7;
-  --ring: #0033a0;
+  --accent: color-mix(in oklch, var(--accent-color), transparent 88%);
+  --accent-foreground: var(--accent-color);
 
-  --header: #001847;
-  --header-foreground: #ffffff;
+  --destructive: var(--danger);
+  --destructive-foreground: oklch(0.99 0.005 258);
 
-  --success: #16a34a;
-  --warning: #d97706;
-  --danger: #dc2626;
+  --border: var(--line-soft);
+  --input: var(--line);
+  --ring: var(--accent-color);
 
-  --chart-1: #0033a0;
-  --chart-2: #16a34a;
-  --chart-3: #d97706;
-  --chart-4: #dc2626;
-  --chart-5: #71717a;
+  --header: var(--bg);
+  --header-foreground: var(--fg);
 
-  --radius: 0.625rem;
+  --success: var(--running);
+  --warning: var(--warn);
+  --danger-color: var(--danger);
 
-  --sidebar: #fafafa;
-  --sidebar-foreground: #0a0a0a;
-  --sidebar-primary: #0033a0;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #fef3c7;
-  --sidebar-accent-foreground: #422006;
-  --sidebar-border: #e4e4e7;
-  --sidebar-ring: #0033a0;
+  --chart-1: var(--accent-color);
+  --chart-2: var(--running);
+  --chart-3: var(--warn);
+  --chart-4: var(--danger);
+  --chart-5: var(--fg3);
+
+  --radius: 0.75rem;
+
+  --sidebar: var(--bg);
+  --sidebar-foreground: var(--fg);
+  --sidebar-primary: var(--accent-color);
+  --sidebar-primary-foreground: var(--accent-color-fg);
+  --sidebar-accent: var(--bg2);
+  --sidebar-accent-foreground: var(--fg);
+  --sidebar-border: var(--line-soft);
+  --sidebar-ring: var(--accent-color);
 }
 
 .dark {
-  --background: #0a0a0a;
-  --foreground: #fafafa;
+  --bg: oklch(0.155 0.012 258);
+  --bg2: oklch(0.195 0.014 258);
+  --bg3: oklch(0.245 0.016 258);
+  --bg4: oklch(0.290 0.018 258);
+  --line: oklch(0.305 0.020 258);
+  --line-soft: oklch(0.235 0.018 258);
+  --fg: oklch(0.98 0.006 258);
+  --fg2: oklch(0.78 0.012 258);
+  --fg3: oklch(0.58 0.016 258);
+  --accent-color: oklch(0.66 0.19 264);
+  --accent-color-fg: oklch(0.99 0.005 258);
 
-  --card: #111111;
-  --card-foreground: #fafafa;
+  --running: oklch(0.78 0.18 152);
+  --finish: oklch(0.80 0.14 198);
+  --dnf: oklch(0.62 0.012 258);
+  --warn: oklch(0.82 0.16 60);
+  --danger: oklch(0.72 0.18 25);
 
-  --popover: #111111;
-  --popover-foreground: #fafafa;
+  --background: var(--bg);
+  --foreground: var(--fg);
 
-  --primary: #3d6fe5;
-  --primary-foreground: #ffffff;
+  --card: var(--bg2);
+  --card-foreground: var(--fg);
 
-  --secondary: #171717;
-  --secondary-foreground: #fafafa;
+  --popover: var(--bg2);
+  --popover-foreground: var(--fg);
 
-  --muted: #171717;
-  --muted-foreground: #a1a1aa;
+  --primary: var(--accent-color);
+  --primary-foreground: var(--accent-color-fg);
 
-  --accent: #422006;
-  --accent-foreground: #fef3c7;
+  --secondary: var(--bg3);
+  --secondary-foreground: var(--fg);
 
-  --destructive: #ef4444;
-  --destructive-foreground: #ffffff;
+  --muted: var(--bg3);
+  --muted-foreground: var(--fg3);
 
-  --border: #1f1f23;
-  --input: #1f1f23;
-  --ring: #3d6fe5;
+  --accent: color-mix(in oklch, var(--accent-color), transparent 86%);
+  --accent-foreground: var(--accent-color);
 
-  --header: #001033;
-  --header-foreground: #ffffff;
+  --destructive: var(--danger);
+  --destructive-foreground: oklch(0.99 0.005 258);
 
-  --success: #22c55e;
-  --warning: #f59e0b;
-  --danger: #ef4444;
+  --border: var(--line-soft);
+  --input: var(--line);
+  --ring: var(--accent-color);
 
-  --chart-1: #3d6fe5;
-  --chart-2: #22c55e;
-  --chart-3: #f59e0b;
-  --chart-4: #ef4444;
-  --chart-5: #a1a1aa;
+  --header: var(--bg);
+  --header-foreground: var(--fg);
 
-  --sidebar: #000000;
-  --sidebar-foreground: #fafafa;
-  --sidebar-primary: #3d6fe5;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #422006;
-  --sidebar-accent-foreground: #fef3c7;
-  --sidebar-border: #1f1f23;
-  --sidebar-ring: #3d6fe5;
+  --success: var(--running);
+  --warning: var(--warn);
+
+  --chart-1: var(--accent-color);
+  --chart-2: var(--running);
+  --chart-3: var(--warn);
+  --chart-4: var(--danger);
+  --chart-5: var(--fg3);
+
+  --sidebar: var(--bg);
+  --sidebar-foreground: var(--fg);
+  --sidebar-primary: var(--accent-color);
+  --sidebar-primary-foreground: var(--accent-color-fg);
+  --sidebar-accent: var(--bg2);
+  --sidebar-accent-foreground: var(--fg);
+  --sidebar-border: var(--line-soft);
+  --sidebar-ring: var(--accent-color);
 }
 
 @theme inline {
@@ -135,6 +175,16 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-danger: var(--danger);
+  --color-running: var(--running);
+  --color-finish: var(--finish);
+  --color-dnf: var(--dnf);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+  --color-bg2: var(--bg2);
+  --color-bg3: var(--bg3);
+  --color-bg4: var(--bg4);
+  --color-fg2: var(--fg2);
+  --color-fg3: var(--fg3);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
@@ -150,11 +200,11 @@
   --color-sidebar-ring: var(--sidebar-ring);
 
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-jetbrains-mono);
   --font-heading: var(--font-geist-sans);
 
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) * 1.4);
   --radius-2xl: calc(var(--radius) * 1.8);
@@ -172,9 +222,17 @@
   }
   body {
     @apply bg-background text-foreground;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
   }
-  .tabular {
+  .tabular,
+  .rt-mono,
+  .font-mono {
     font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+  .rt-mono {
+    font-family: var(--font-mono), ui-monospace, SFMono-Regular, monospace;
   }
   .maplibregl-popup-content {
     @apply bg-transparent! shadow-none! p-0! rounded-none!;
@@ -182,13 +240,71 @@
   .maplibregl-popup-tip {
     @apply hidden!;
   }
+  ::selection {
+    background: var(--accent-color);
+    color: var(--accent-color-fg);
+  }
 }
 
+/* Race-specific animations */
 @keyframes pulse-ring {
-  0% { transform: scale(1); opacity: 0.7; }
-  100% { transform: scale(2.4); opacity: 0; }
+  0%   { transform: scale(1);   opacity: 0.7; }
+  100% { transform: scale(2.4); opacity: 0;   }
+}
+@keyframes rt-pulse {
+  0%   { transform: scale(0.9); opacity: 0.9; }
+  100% { transform: scale(2.4); opacity: 0;   }
+}
+@keyframes rt-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+@keyframes rt-float-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.runner-pulse {
-  animation: pulse-ring 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+.runner-pulse { animation: pulse-ring 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite; }
+.rt-pulse     { animation: rt-pulse 1.8s ease-out infinite; }
+.rt-blink     { animation: rt-blink 1.6s ease-in-out infinite; }
+.rt-fade-in   { animation: rt-float-in 320ms cubic-bezier(.2,.7,.3,1) both; }
+
+.rt-press { transition: transform 140ms ease, background-color 140ms ease, opacity 140ms ease; }
+.rt-press:active { transform: scale(0.97); }
+
+/* Live pill — reused in header / desktop chrome */
+.rt-live-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px 3px 8px;
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--running), transparent 80%);
+  color: var(--running);
+  border: 1px solid color-mix(in oklch, var(--running), transparent 70%);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
+.rt-live-dot {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--running);
+  animation: rt-blink 1.6s ease-in-out infinite;
+}
+
+/* Bib disc — uniform visual identifier across screens */
+.rt-bib {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: var(--accent-color);
+  color: var(--accent-color-fg);
+  border-radius: 10px;
+}
+.rt-bib--sm { width: 30px; height: 30px; font-size: 11px; }
+.rt-bib--md { width: 38px; height: 38px; font-size: 14px; }
+.rt-bib--lg { width: 64px; height: 64px; font-size: 22px; border-radius: 16px; border: 3px solid var(--bg2); }

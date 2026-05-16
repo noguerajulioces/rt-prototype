@@ -16,7 +16,6 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useT } from "./LocaleContext";
 import type { Runner } from "@/lib/mock-data";
@@ -138,28 +137,41 @@ function MobileBottomBar({
 
   return (
     <nav
-      className="grid shrink-0 grid-cols-4 gap-1 border-t border-border bg-card px-2 py-1.5"
+      className="grid shrink-0 grid-cols-4 gap-1 border-t border-line-soft bg-background px-2 pb-2.5 pt-1.5"
       aria-label="Mobile navigation"
     >
       {buttons.map((b) => {
         const Icon = b.icon;
         const active = openPanel === b.key;
         return (
-          <Button
+          <button
             key={b.key}
-            variant="ghost"
-            size="sm"
+            type="button"
             onClick={() => onOpen(active ? null : b.key)}
             className={cn(
-              "flex h-auto flex-col items-center gap-0.5 py-1.5",
-              active
-                ? "bg-primary/10 text-primary hover:bg-primary/10"
-                : "text-muted-foreground",
+              "rt-press relative flex flex-col items-center gap-1 rounded-xl px-1 py-2",
+              active ? "text-primary" : "text-fg3 hover:text-foreground",
             )}
           >
-            <Icon className="h-4 w-4" />
-            <span className="text-[10px] font-medium">{b.label}</span>
-          </Button>
+            {active && (
+              <span
+                aria-hidden
+                className="absolute left-1/2 top-0 h-[3px] w-[22px] -translate-x-1/2 rounded-full bg-primary"
+              />
+            )}
+            <Icon
+              className="h-5 w-5"
+              strokeWidth={active ? 2.2 : 1.8}
+            />
+            <span
+              className={cn(
+                "text-[10px] tracking-tight",
+                active ? "font-semibold" : "font-medium",
+              )}
+            >
+              {b.label}
+            </span>
+          </button>
         );
       })}
     </nav>

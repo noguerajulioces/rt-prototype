@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
-import { Crown } from "lucide-react";
+import { Flag, Trophy, Droplets, Timer } from "lucide-react";
 import { useTheme } from "next-themes";
 import {
   Map,
@@ -36,7 +36,10 @@ import {
 import { useReplay } from "./ReplayContext";
 import { useSettings } from "./SettingsContext";
 import { useT } from "./LocaleContext";
+import { useCourse } from "./CourseContext";
 import { RunnerPopup } from "./RunnerPopup";
+import { RouteHoverInfo } from "./RouteHoverInfo";
+import { RouteDirectionArrows } from "./RouteDirectionArrows";
 
 type LayerKey = "topo" | "grey" | "osm";
 
@@ -60,6 +63,7 @@ export function RaceMap({
     race.country === "NO" ? "topo" : "osm",
   );
   const { resolvedTheme } = useTheme();
+  const { showRouteDirection } = useSettings();
 
   const styles = useMemo(
     () => ({ light: layerStyles[layer], dark: layerStyles[layer] }),
@@ -98,21 +102,22 @@ export function RaceMap({
           interactive={false}
         />
 
+        {showRouteDirection && (
+          <RouteDirectionArrows coordinates={routeCoords} />
+        )}
+
         {checkpoints.map((cp) => (
           <MapMarker
             key={cp.id}
             longitude={cp.location[0]}
             latitude={cp.location[1]}
-            anchor="bottom"
+            anchor="center"
           >
-            <MarkerContent className="cursor-default">
+            <MarkerContent className="cursor-pointer">
               <CheckpointPin cp={cp} />
             </MarkerContent>
-            <MarkerTooltip offset={8}>
-              <span className="font-semibold">{cp.name}</span>
-              <span className="ml-1 font-mono tabular opacity-70">
-                · {cp.km} km
-              </span>
+            <MarkerTooltip offset={14}>
+              <CheckpointTooltip cp={cp} />
             </MarkerTooltip>
           </MapMarker>
         ))}
@@ -129,18 +134,29 @@ export function RaceMap({
           showLocate
           showFullscreen
         />
+
+        <RouteHoverInfo />
       </Map>
 
       <div className="absolute right-3 top-3 z-10">
         <Tabs value={layer} onValueChange={(v) => setLayer(v as LayerKey)}>
-          <TabsList className="h-8 bg-background/95 backdrop-blur shadow-sm">
-            <TabsTrigger value="topo" className="text-xs">
+          <TabsList className="h-8 rounded-full border border-line-soft bg-bg2/90 p-1 backdrop-blur shadow-[0_4px_12px_-4px_rgba(0,0,0,0.4)]">
+            <TabsTrigger
+              value="topo"
+              className="rounded-full px-3 text-[11px] font-semibold tracking-tight data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
               Topo
             </TabsTrigger>
-            <TabsTrigger value="grey" className="text-xs">
+            <TabsTrigger
+              value="grey"
+              className="rounded-full px-3 text-[11px] font-semibold tracking-tight data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
               Gris
             </TabsTrigger>
-            <TabsTrigger value="osm" className="text-xs">
+            <TabsTrigger
+              value="osm"
+              className="rounded-full px-3 text-[11px] font-semibold tracking-tight data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            >
               OSM
             </TabsTrigger>
           </TabsList>
@@ -159,17 +175,26 @@ function RunnerMarkers({
 }) {
   const { raceTime } = useReplay();
   const { showAllNames, showBib, showLeader } = useSettings();
+  const { selectedCourseId } = useCourse();
+
+  const visibleRunners = useMemo(
+    () =>
+      selectedCourseId
+        ? runners.filter((r) => r.courseId === selectedCourseId)
+        : runners,
+    [selectedCourseId],
+  );
 
   const leaderId = useMemo(() => {
     if (!showLeader) return null;
-    const ranked = rankedRunners();
+    const ranked = rankedRunners(selectedCourseId ?? undefined);
     const liveLeader = ranked.find((r) => r.status === "running");
     return (liveLeader ?? ranked[0])?.id ?? null;
-  }, [showLeader]);
+  }, [showLeader, selectedCourseId]);
 
   return (
     <>
-      {runners.map((r) => {
+      {visibleRunners.map((r) => {
         const km = runnerKmAtTime(r, raceTime);
         if (km === null) return null;
         const [lng, lat] = runnerLngLat(km);
@@ -216,10 +241,10 @@ function RunnerLabel({
     <MarkerLabel
       position="top"
       className={cn(
-        "rounded-md px-1.5 py-0.5 text-[10px] font-semibold shadow-sm border whitespace-nowrap",
+        "mb-0.5 whitespace-nowrap rounded-md border px-1.5 py-0.5 text-[10.5px] font-semibold tracking-tight shadow-[0_2px_6px_-2px_rgba(0,0,0,0.5)]",
         isLeader
-          ? "bg-warning text-white border-warning"
-          : "bg-card text-card-foreground border-border",
+          ? "border-[color:var(--running)] bg-[color-mix(in_oklch,var(--running),transparent_75%)] text-foreground"
+          : "border-line-soft bg-bg2/90 text-foreground backdrop-blur",
       )}
     >
       {isLeader ? t("map.leaderBadge", { name: runner.name }) : runner.name}
@@ -269,38 +294,62 @@ function FollowCamera() {
   return null;
 }
 
+function checkpointMeta(type: Checkpoint["type"]) {
+  switch (type) {
+    case "start":
+      return { Icon: Flag, label: "Salida" };
+    case "finish":
+      return { Icon: Trophy, label: "Meta" };
+    case "aid":
+      return { Icon: Droplets, label: "Avituallamiento" };
+    case "timing":
+      return { Icon: Timer, label: "Cronometraje" };
+  }
+}
+
 function CheckpointPin({ cp }: { cp: Checkpoint }) {
   const isTerminal = cp.type === "start" || cp.type === "finish";
+  const { Icon } = checkpointMeta(cp.type);
   return (
-    <div className="flex flex-col items-center select-none">
-      <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md ring-[3px] ring-white">
-        {isTerminal ? (
-          <svg
-            viewBox="0 0 24 24"
-            width="14"
-            height="14"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <rect x="6" y="6" width="12" height="12" rx="1" />
-          </svg>
-        ) : (
-          <svg
-            viewBox="0 0 24 24"
-            width="14"
-            height="14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <polyline points="20 6 9 17 4 12" />
-          </svg>
+    <div
+      aria-hidden
+      className={cn(
+        "rt-press relative inline-flex h-7 w-7 select-none items-center justify-center border-2 border-background bg-primary text-primary-foreground shadow-[0_2px_6px_rgba(0,0,0,0.55)]",
+        isTerminal ? "rounded-md" : "rounded-full",
+      )}
+    >
+      <Icon className="h-3.5 w-3.5" strokeWidth={2.4} />
+    </div>
+  );
+}
+
+function CheckpointTooltip({ cp }: { cp: Checkpoint }) {
+  const { Icon, label } = checkpointMeta(cp.type);
+  return (
+    <div className="min-w-[180px] rounded-xl border border-line-soft bg-popover px-3 py-2.5 text-popover-foreground shadow-2xl shadow-black/40">
+      <div className="flex items-center gap-2">
+        <span className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-[color-mix(in_oklch,var(--accent-color),transparent_82%)] text-primary">
+          <Icon className="h-4 w-4" />
+        </span>
+        <div className="min-w-0">
+          <div className="text-[13px] font-semibold leading-tight tracking-tight">
+            {cp.name}
+          </div>
+          <div className="rt-mono mt-0.5 text-[10.5px] tabular text-fg3">
+            km {cp.km} · {cp.elevation} m
+          </div>
+        </div>
+      </div>
+      <div className="mt-2 flex items-center gap-2 border-t border-line-soft pt-2">
+        <span className="text-[10px] font-bold uppercase tracking-[0.08em] text-fg3">
+          {label}
+        </span>
+        {cp.services && cp.services.length > 0 && (
+          <span className="text-[10.5px] text-fg2">
+            · {cp.services.slice(0, 3).join(" · ")}
+          </span>
         )}
       </div>
-      <div className="h-2 w-2 -mt-1 rotate-45 bg-primary shadow-sm ring-[3px] ring-white" />
     </div>
   );
 }
@@ -318,33 +367,46 @@ function RunnerDot({
 }) {
   const finished = runner.status === "finished";
   const dnf = runner.status === "dnf";
-  const bg = dnf
-    ? "bg-muted-foreground"
+  const ring = isLeader
+    ? "ring-[color:var(--running)]"
+    : isFav
+      ? "ring-primary"
+      : "ring-background";
+  const color = dnf
+    ? "bg-[color:var(--dnf)]"
     : finished
-      ? "bg-primary"
-      : "bg-success";
+      ? "bg-[color:var(--finish)]"
+      : "bg-[color:var(--running)]";
+  /* Bigger when the bib is rendered inside; leader gets a small bump. */
+  const size = showBib
+    ? isLeader
+      ? "h-[28px] w-[28px] text-[11.5px]"
+      : "h-6 w-6 text-[10.5px]"
+    : isLeader
+      ? "h-5 w-5"
+      : "h-[18px] w-[18px]";
   return (
     <div className="relative">
-      {isLeader && (
-        <Crown
-          aria-hidden="true"
-          fill="currentColor"
-          className="absolute -top-3.5 left-1/2 z-10 h-3.5 w-3.5 -translate-x-1/2 text-warning drop-shadow-[0_1px_2px_rgba(0,0,0,0.35)]"
-        />
-      )}
       <div
         title={`${runner.name} · #${runner.bib}`}
         className={cn(
-          "relative flex h-5 w-5 items-center justify-center rounded-full text-white text-[10px] font-mono font-bold tabular shadow-md ring-2",
-          bg,
-          isLeader
-            ? "ring-warning shadow-warning/40"
-            : isFav
-              ? "ring-warning"
-              : "ring-white",
+          "relative inline-flex items-center justify-center rounded-full font-bold leading-none text-white shadow-[0_1px_3px_rgba(0,0,0,0.55)] ring-2",
+          color,
+          ring,
+          size,
         )}
       >
-        {showBib ? runner.bib : ""}
+        {showBib && (
+          <span className="rt-mono tabular drop-shadow-[0_1px_1px_rgba(0,0,0,0.5)]">
+            {runner.bib}
+          </span>
+        )}
+        {isLeader && (
+          <span
+            aria-hidden
+            className="absolute -inset-1.5 rounded-full ring-2 ring-[color:var(--running)] opacity-50 rt-pulse"
+          />
+        )}
       </div>
     </div>
   );

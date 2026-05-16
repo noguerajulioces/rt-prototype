@@ -69,13 +69,13 @@ export function IconRail({
               }
             }}
             className={cn(
-              "h-9 w-9 rounded-md",
+              "rt-press h-10 w-10 rounded-xl border",
               isActive
-                ? "bg-primary/15 text-primary hover:bg-primary/15"
-                : "text-muted-foreground hover:text-foreground",
+                ? "border-[color-mix(in_oklch,var(--accent-color),transparent_70%)] bg-[color-mix(in_oklch,var(--accent-color),transparent_86%)] text-primary hover:bg-[color-mix(in_oklch,var(--accent-color),transparent_86%)]"
+                : "border-transparent text-fg3 hover:text-foreground",
             )}
           >
-            <Icon className="h-4 w-4" />
+            <Icon className="h-[18px] w-[18px]" />
           </Button>
         </TooltipTrigger>
         <TooltipContent side="right">{label}</TooltipContent>
@@ -84,7 +84,7 @@ export function IconRail({
   };
 
   return (
-    <nav className="flex w-12 shrink-0 flex-col items-center gap-1 border-r border-border bg-card py-2">
+    <nav className="flex w-14 shrink-0 flex-col items-center gap-1.5 border-r border-line-soft bg-background px-2 py-2.5">
       {raceTabs.map(renderPanelButton)}
 
       <Tooltip>
@@ -96,13 +96,13 @@ export function IconRail({
             aria-pressed={showElevation}
             onClick={() => set("showElevation", !showElevation)}
             className={cn(
-              "h-9 w-9 rounded-md",
+              "rt-press h-10 w-10 rounded-xl border",
               showElevation
-                ? "bg-primary/15 text-primary hover:bg-primary/15"
-                : "text-muted-foreground hover:text-foreground",
+                ? "border-[color-mix(in_oklch,var(--accent-color),transparent_70%)] bg-[color-mix(in_oklch,var(--accent-color),transparent_86%)] text-primary hover:bg-[color-mix(in_oklch,var(--accent-color),transparent_86%)]"
+                : "border-transparent text-fg3 hover:text-foreground",
             )}
           >
-            <Mountain className="h-4 w-4" />
+            <Mountain className="h-[18px] w-[18px]" />
           </Button>
         </TooltipTrigger>
         <TooltipContent side="right">
@@ -110,7 +110,7 @@ export function IconRail({
         </TooltipContent>
       </Tooltip>
 
-      <Separator className="mt-auto my-1 w-6" />
+      <Separator className="mt-auto my-1 w-7 bg-line-soft" />
       {renderPanelButton(settingsTab)}
     </nav>
   );

@@ -19,6 +19,11 @@ export function SettingsContent() {
         <SectionTitle>{t("settings.section.map")}</SectionTitle>
         <ToggleRow id="show-leader" tKey="settings.showLeader" k="showLeader" />
         <ToggleRow id="show-bib" tKey="settings.showBib" k="showBib" />
+        <ToggleRow
+          id="route-direction"
+          tKey="settings.routeDirection"
+          k="showRouteDirection"
+        />
         <ToggleRow id="predictive" tKey="settings.predictive" k="predictive" />
         <ToggleRow
           id="fav-tracks"

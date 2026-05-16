@@ -10,6 +10,8 @@ import { RaceMap } from "./RaceMap";
 import { BottomStrip } from "./BottomStrip";
 import { RunnerDialog } from "./RunnerDialog";
 import { MobileLayout } from "./MobileLayout";
+import { MapOverlays } from "./MapOverlays";
+import { RaceSponsorDialog } from "./RaceSponsorDialog";
 import { Button } from "@/components/ui/button";
 import { useT } from "./LocaleContext";
 import { useReplay } from "./ReplayContext";
@@ -76,6 +78,7 @@ export function AppShell() {
         open={dialogOpen}
         onOpenChange={setDialogOpen}
       />
+      <RaceSponsorDialog race={race} />
     </div>
   );
 }
@@ -115,13 +118,14 @@ function DesktopLayout({
             favourites={favourites}
             onRunnerDetails={onRunnerClick}
           />
+          <MapOverlays />
           {!sidebarOpen && (
             <Button
               variant="outline"
               size="icon"
               aria-label={t("rail.openPanel")}
               onClick={() => setSidebarOpen(true)}
-              className="absolute left-3 top-3 z-10 h-8 w-8 bg-background/95 backdrop-blur"
+              className="rt-press absolute left-3 top-3 z-20 h-9 w-9 rounded-xl border-line-soft bg-bg2/90 backdrop-blur"
             >
               <ChevronRight className="h-4 w-4" />
             </Button>

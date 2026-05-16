@@ -30,11 +30,34 @@ export type Runner = {
   lastCheckpointId?: string;
   splits: { checkpointId: string; elapsedSeconds: number }[];
   paceSecondsPerKm: number;
+  /* When the race has multiple courses, runners belong to one of them. */
+  courseId?: string;
 };
 
 export type ElevationPoint = { km: number; elevation: number };
 
 export type RoutePoint = { lng: number; lat: number; km: number };
+
+export type Course = {
+  id: string;
+  name: string;
+  shortName?: string;
+  distance: number;
+  elevationGain: number;
+  /* HEX accent color used to tint this course's route line. */
+  color?: string;
+};
+
+export type Sponsor = {
+  name: string;
+  /* Hero background photo for the splash dialog (optional). */
+  imageUrl?: string;
+  /* Tagline shown under the race name on the splash. */
+  tagline?: string;
+  /* Public URL — rendered as a link in the splash dialog. */
+  websiteUrl?: string;
+  websiteLabel?: string;
+};
 
 export type RaceInfo = {
   slug: string;
@@ -53,6 +76,9 @@ export type RaceInfo = {
   totalRunners: number;
   startedAt: string;
   elapsedSeconds: number;
+  sponsor?: Sponsor;
+  /* Optional list of courses. When omitted, the race has a single course. */
+  courses?: Course[];
 };
 
 export const race: RaceInfo = {
@@ -72,6 +98,28 @@ export const race: RaceInfo = {
   totalRunners: 248,
   startedAt: "08:00",
   elapsedSeconds: 4 * 3600 + 17 * 60 + 32,
+  sponsor: {
+    name: "Nekrotrail Trail Series",
+    tagline: "Trail · Ultra · 42K · Østmarka",
+    websiteUrl: "https://nekrotrail.example",
+    websiteLabel: "nekrotrail.example",
+  },
+  courses: [
+    {
+      id: "ultra-42k",
+      name: "Ultra 42K",
+      shortName: "42K",
+      distance: 42,
+      elevationGain: 1280,
+    },
+    {
+      id: "half-21k",
+      name: "Half 21K",
+      shortName: "21K",
+      distance: 21,
+      elevationGain: 640,
+    },
+  ],
 };
 
 export const checkpoints: Checkpoint[] = [
@@ -559,8 +607,14 @@ export function getCheckpoint(id: string): Checkpoint | undefined {
   return checkpoints.find((c) => c.id === id);
 }
 
-export function rankedRunners(): Runner[] {
-  return [...runners].sort((a, b) => {
+/* Assign demo courses deterministically: every 3rd runner into the half. */
+runners.forEach((r, i) => {
+  if (r.courseId) return;
+  r.courseId = i % 3 === 0 ? "half-21k" : "ultra-42k";
+});
+
+export function rankedRunners(courseId?: string): Runner[] {
+  return runnersForCourse(courseId).sort((a, b) => {
     const rank = (r: Runner) => {
       if (r.status === "finished") return 0;
       if (r.status === "running") return 1;
@@ -572,4 +626,9 @@ export function rankedRunners(): Runner[] {
     if (a.status === "running") return b.currentKm - a.currentKm;
     return a.bib - b.bib;
   });
+}
+
+export function runnersForCourse(courseId?: string): Runner[] {
+  if (!courseId || courseId === "all") return [...runners];
+  return runners.filter((r) => r.courseId === courseId);
 }

@@ -17,6 +17,7 @@ export type Settings = {
   showAllNames: boolean;
   showRunnersOnProfile: boolean;
   showElevation: boolean;
+  showRouteDirection: boolean;
 };
 
 type SettingsCtx = Settings & {
@@ -32,6 +33,7 @@ const defaultSettings: Settings = {
   showAllNames: false,
   showRunnersOnProfile: false,
   showElevation: true,
+  showRouteDirection: true,
 };
 
 const Ctx = createContext<SettingsCtx | null>(null);
