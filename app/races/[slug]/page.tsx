@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { getRace, races } from "@/lib/mock-data";
@@ -42,5 +43,9 @@ export default async function RacePage(props: PageProps<"/races/[slug]">) {
   const { slug } = await props.params;
   const r = getRace(slug);
   if (!r) notFound();
-  return <AppShell />;
+  return (
+    <Suspense fallback={null}>
+      <AppShell />
+    </Suspense>
+  );
 }

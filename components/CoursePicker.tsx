@@ -27,13 +27,14 @@ export function CoursePicker({ className }: { className?: string }) {
           variant="outline"
           size="sm"
           aria-label="Seleccionar traza"
+          title={label}
           className={cn(
-            "rt-press h-8 gap-1.5 rounded-full border-line-soft bg-bg2 px-3 text-[12px] font-semibold tracking-tight",
+            "rt-press h-8 gap-1.5 rounded-full border-line-soft bg-bg2 px-2 text-[12px] font-semibold tracking-tight sm:px-3",
             className,
           )}
         >
           <Route className="h-3.5 w-3.5 text-fg3" />
-          <span>{label}</span>
+          <span className="hidden sm:inline">{label}</span>
           <ChevronDown className="h-3 w-3 opacity-60" />
         </Button>
       </DropdownMenuTrigger>

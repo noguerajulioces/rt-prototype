@@ -39,7 +39,7 @@ export default async function CorredorPage(
 
   return (
     <div className="h-full overflow-y-auto">
-      <div className="mx-auto max-w-5xl px-6 py-6 space-y-6">
+      <div className="mx-auto max-w-5xl space-y-6 px-4 py-5 sm:px-6 sm:py-6">
         <Link
           href={`/races/${race.slug}`}
           className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
@@ -112,14 +112,14 @@ export default async function CorredorPage(
           <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
             Tiempos por checkpoint
           </h3>
-          <div className="overflow-hidden rounded-2xl border border-border bg-card">
+          <div className="overflow-x-auto rounded-2xl border border-border bg-card">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-background/60 text-left text-[11px] uppercase tracking-wider text-muted-foreground">
-                  <th className="px-4 py-2.5 font-medium">Checkpoint</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Km</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Tiempo</th>
-                  <th className="px-4 py-2.5 text-right font-medium">Parcial</th>
+                  <th className="px-3 py-2.5 font-medium sm:px-4">Checkpoint</th>
+                  <th className="px-2 py-2.5 text-right font-medium sm:px-4">Km</th>
+                  <th className="px-2 py-2.5 text-right font-medium sm:px-4">Tiempo</th>
+                  <th className="px-2 py-2.5 text-right font-medium sm:px-4">Parcial</th>
                   <th className="hidden px-4 py-2.5 text-right font-medium md:table-cell">
                     Ritmo
                   </th>
@@ -150,7 +150,7 @@ export default async function CorredorPage(
                   const passed = !!split;
                   return (
                     <tr key={cp.id} className={!passed ? "opacity-40" : ""}>
-                      <td className="px-4 py-3">
+                      <td className="px-3 py-3 sm:px-4">
                         <div className="flex items-center gap-2">
                           <span
                             className={`inline-flex h-1.5 w-1.5 rounded-full ${
@@ -160,13 +160,13 @@ export default async function CorredorPage(
                           <span className="font-medium">{cp.name}</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-right font-mono tabular text-muted-foreground">
+                      <td className="px-2 py-3 text-right font-mono tabular text-muted-foreground sm:px-4">
                         {cp.km}
                       </td>
-                      <td className="px-4 py-3 text-right font-mono tabular">
+                      <td className="px-2 py-3 text-right font-mono tabular sm:px-4">
                         {split ? formatDuration(split.elapsedSeconds) : "—"}
                       </td>
-                      <td className="px-4 py-3 text-right font-mono tabular text-muted-foreground">
+                      <td className="px-2 py-3 text-right font-mono tabular text-muted-foreground sm:px-4">
                         {partial !== null ? formatDuration(partial) : "—"}
                       </td>
                       <td className="hidden px-4 py-3 text-right font-mono tabular text-muted-foreground md:table-cell">

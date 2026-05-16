@@ -13,13 +13,13 @@ export function RaceHeader({ race }: { race: RaceInfo }) {
   const { t } = useT();
   return (
     <header className="relative z-10 shrink-0 border-b border-line-soft bg-background">
-      <div className="flex items-center justify-between gap-3 px-4 py-2.5">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+      <div className="flex items-center justify-between gap-2 px-3 py-2 sm:gap-3 sm:px-4 sm:py-2.5">
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
           <span
             aria-hidden
-            className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground"
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground sm:h-9 sm:w-9"
           >
-            <RaceTrackerMark className="h-5 w-5" />
+            <RaceTrackerMark className="h-4 w-4 sm:h-5 sm:w-5" />
           </span>
           <span className="hidden text-sm font-bold tracking-tight md:inline">
             RaceTracker
@@ -28,36 +28,34 @@ export function RaceHeader({ race }: { race: RaceInfo }) {
             aria-hidden
             className="hidden h-5 w-px shrink-0 bg-line-soft md:block"
           />
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             {/* Mobile: LIVE pill stacked above title */}
             <div className="flex items-center gap-2 md:hidden">
               <span className="rt-live-pill">
                 <span className="rt-live-dot" />
                 {t("header.live")}
               </span>
-              <span className="rt-mono text-[11px] text-fg3">
+              <span className="rt-mono text-[11px] tabular text-fg3">
                 T+ {formatDuration(race.elapsedSeconds)}
               </span>
             </div>
-            <div className="mt-1 flex items-baseline gap-2 md:mt-0">
-              <h1 className="text-[15px] font-semibold leading-tight tracking-tight md:text-[15.5px]">
-                {race.name}{" "}
-                <span className="rt-mono text-fg3 font-medium">
-                  {race.edition}
-                </span>
-              </h1>
-            </div>
-            <div className="mt-0.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] text-fg3">
-              <span className="truncate">{race.location}</span>
-              <span aria-hidden className="h-[3px] w-[3px] rounded-full bg-fg3/60" />
-              <span className="rt-mono">{race.distance} km</span>
-              <span aria-hidden className="h-[3px] w-[3px] rounded-full bg-fg3/60" />
-              <span className="rt-mono">{race.elevationGain} m D+</span>
+            <h1 className="mt-0.5 truncate text-[14px] font-semibold leading-tight tracking-tight md:mt-0 md:text-[15.5px]">
+              {race.name}{" "}
+              <span className="rt-mono font-medium text-fg3">
+                {race.edition}
+              </span>
+            </h1>
+            <div className="mt-0.5 truncate text-[11px] text-fg3">
+              <span>{race.location}</span>
+              <span aria-hidden className="mx-1.5 inline-block h-[3px] w-[3px] translate-y-[-2px] rounded-full bg-fg3/60 align-middle" />
+              <span className="rt-mono tabular">{race.distance} km</span>
+              <span aria-hidden className="mx-1.5 inline-block h-[3px] w-[3px] translate-y-[-2px] rounded-full bg-fg3/60 align-middle" />
+              <span className="rt-mono tabular">{race.elevationGain} m D+</span>
             </div>
           </div>
         </div>
 
-        <div className="flex shrink-0 items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <CoursePicker />
           {/* Desktop: LIVE pill on the right */}
           <span className="rt-live-pill hidden md:inline-flex">
@@ -67,9 +65,13 @@ export function RaceHeader({ race }: { race: RaceInfo }) {
               T+ {formatDuration(race.elapsedSeconds)}
             </span>
           </span>
-          <LanguageSwitcher />
+          <div className="hidden md:block">
+            <LanguageSwitcher />
+          </div>
           <ShareButton title={`${race.name} ${race.edition} · RaceTracker`} />
-          <ThemeToggle />
+          <div className="hidden md:block">
+            <ThemeToggle />
+          </div>
         </div>
       </div>
     </header>

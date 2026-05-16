@@ -129,30 +129,30 @@ function RowLink({
 function LiveRow({ race }: { race: RaceInfo }) {
   return (
     <RowLink href={`/races/${race.slug}`}>
-      <div className="grid grid-cols-[80px_1fr_auto] items-center gap-6 py-5">
+      <div className="grid grid-cols-[64px_1fr_auto] items-center gap-3 py-4 sm:grid-cols-[80px_1fr_auto] sm:gap-6 sm:py-5">
         <div className="flex flex-col items-start gap-1">
           <span className="rt-live-pill">
             <span className="rt-live-dot" />
             LIVE
           </span>
-          <span className="rt-mono text-[11px] tabular text-fg3">
+          <span className="rt-mono text-[10.5px] tabular text-fg3 sm:text-[11px]">
             T+ {formatDuration(race.elapsedSeconds)}
           </span>
         </div>
 
         <div className="min-w-0">
-          <div className="flex items-baseline gap-2">
-            <h3 className="text-[26px] font-semibold leading-tight tracking-tight">
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <h3 className="text-[20px] font-semibold leading-tight tracking-tight sm:text-[26px]">
               {race.name}
             </h3>
-            <span className="rt-mono text-[15px] font-medium text-fg3">
+            <span className="rt-mono text-[13px] font-medium text-fg3 sm:text-[15px]">
               {race.edition}
             </span>
-            <span aria-hidden className="text-[15px] leading-none">
+            <span aria-hidden className="text-[14px] leading-none sm:text-[15px]">
               {flagEmoji(race.country)}
             </span>
           </div>
-          <div className="mt-1 text-[13px] text-fg2">{race.location}</div>
+          <div className="mt-1 text-[12.5px] text-fg2 sm:text-[13px]">{race.location}</div>
           <div className="rt-mono mt-2 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] tabular text-fg3">
             <span className="text-fg2">{race.distance} km</span>
             <Dot />
@@ -186,11 +186,11 @@ function LiveRow({ race }: { race: RaceInfo }) {
 function UpcomingRow({ race }: { race: RaceInfo }) {
   return (
     <RowLink href={`/races/${race.slug}`}>
-      <div className="grid grid-cols-[80px_1fr_auto] items-center gap-6 py-4">
+      <div className="grid grid-cols-[64px_1fr_auto] items-center gap-3 py-3.5 sm:grid-cols-[80px_1fr_auto] sm:gap-6 sm:py-4">
         <DateBlock iso={race.date} />
         <div className="min-w-0">
-          <div className="flex items-baseline gap-2">
-            <h3 className="text-[18px] font-semibold leading-tight tracking-tight">
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <h3 className="text-[16px] font-semibold leading-tight tracking-tight sm:text-[18px]">
               {race.name}
             </h3>
             <span className="rt-mono text-[12px] font-medium text-fg3">
@@ -198,6 +198,10 @@ function UpcomingRow({ race }: { race: RaceInfo }) {
             </span>
           </div>
           <div className="mt-0.5 text-[12px] text-fg2">{race.location}</div>
+          <div className="rt-mono mt-1 text-[11px] tabular text-fg3 md:hidden">
+            <span className="text-fg2">{race.distance} km</span> ·{" "}
+            {race.elevationGain} m D+
+          </div>
         </div>
         <div className="rt-mono hidden text-right text-[11.5px] tabular text-fg2 md:block">
           <div>
@@ -216,11 +220,11 @@ function UpcomingRow({ race }: { race: RaceInfo }) {
 function PastRow({ race }: { race: RaceInfo }) {
   return (
     <RowLink href={`/races/${race.slug}`}>
-      <div className="grid grid-cols-[80px_1fr_auto] items-center gap-6 py-4">
+      <div className="grid grid-cols-[64px_1fr_auto] items-center gap-3 py-3.5 sm:grid-cols-[80px_1fr_auto] sm:gap-6 sm:py-4">
         <DateBlock iso={race.date} muted />
         <div className="min-w-0">
-          <div className="flex items-baseline gap-2">
-            <h3 className="text-[17px] font-semibold leading-tight tracking-tight">
+          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5">
+            <h3 className="text-[15px] font-semibold leading-tight tracking-tight sm:text-[17px]">
               {race.name}
             </h3>
             <span className="rt-mono text-[12px] font-medium text-fg3">
@@ -229,8 +233,8 @@ function PastRow({ race }: { race: RaceInfo }) {
           </div>
           <div className="mt-0.5 text-[12px] text-fg2">{race.location}</div>
           {race.winner && (
-            <div className="mt-1.5 flex items-center gap-1.5 text-[11.5px] text-fg3">
-              <Trophy className="h-3 w-3 text-primary" />
+            <div className="mt-1.5 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11.5px] text-fg3">
+              <Trophy className="h-3 w-3 shrink-0 text-primary" />
               <span className="text-fg2">{race.winner.name}</span>
               <span aria-hidden>{flagEmoji(race.winner.country)}</span>
               <span className="rt-mono tabular">
@@ -264,8 +268,8 @@ function DateBlock({ iso, muted }: { iso: string; muted?: boolean }) {
         muted ? "text-fg3" : "text-foreground",
       )}
     >
-      <div className="text-[26px] font-bold tracking-tight">{day}</div>
-      <div className="mt-1 text-[10.5px] font-semibold tracking-[0.1em]">
+      <div className="text-[22px] font-bold tracking-tight sm:text-[26px]">{day}</div>
+      <div className="mt-1 text-[10px] font-semibold tracking-[0.1em] sm:text-[10.5px]">
         {month}
       </div>
     </div>

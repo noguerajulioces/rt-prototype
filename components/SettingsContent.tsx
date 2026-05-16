@@ -8,10 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useSettings, type Settings as SettingsType } from "./SettingsContext";
 import { useT } from "./LocaleContext";
+import { locales, localeLabels } from "@/lib/i18n";
+import { cn } from "@/lib/utils";
 
 export function SettingsContent() {
   const { theme, setTheme } = useTheme();
-  const { t } = useT();
+  const { t, locale, setLocale } = useT();
 
   return (
     <div className="space-y-3">
@@ -64,6 +66,28 @@ export function SettingsContent() {
             icon={<Monitor className="h-3.5 w-3.5" />}
             label={t("settings.theme.system")}
           />
+        </div>
+      </div>
+      <Separator />
+      <div>
+        <SectionTitle>{t("settings.section.language")}</SectionTitle>
+        <div className="grid grid-cols-3 gap-1.5">
+          {locales.map((l) => {
+            const meta = localeLabels[l];
+            const active = l === locale;
+            return (
+              <Button
+                key={l}
+                variant={active ? "default" : "outline"}
+                size="sm"
+                onClick={() => setLocale(l)}
+                className={cn("h-8 gap-1 text-xs", active && "font-semibold")}
+              >
+                <span aria-hidden>{meta.flag}</span>
+                <span className="uppercase tabular tracking-wider">{l}</span>
+              </Button>
+            );
+          })}
         </div>
       </div>
     </div>
