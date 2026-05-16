@@ -11,14 +11,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCourse } from "./CourseContext";
+import { useT } from "./LocaleContext";
 import { cn } from "@/lib/utils";
 
 export function CoursePicker({ className }: { className?: string }) {
   const { courses, selectedCourseId, setSelectedCourseId, selectedCourse } =
     useCourse();
+  const { t } = useT();
   if (courses.length === 0) return null;
 
-  const label = selectedCourse?.shortName ?? selectedCourse?.name ?? "Todos";
+  const label =
+    selectedCourse?.shortName ?? selectedCourse?.name ?? t("course.allShort");
 
   return (
     <DropdownMenu>
@@ -26,7 +29,7 @@ export function CoursePicker({ className }: { className?: string }) {
         <Button
           variant="outline"
           size="sm"
-          aria-label="Seleccionar traza"
+          aria-label={t("course.select")}
           title={label}
           className={cn(
             "rt-press h-8 gap-1.5 rounded-full border-line-soft bg-bg2 px-2 text-[12px] font-semibold tracking-tight sm:px-3",
@@ -40,7 +43,7 @@ export function CoursePicker({ className }: { className?: string }) {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="min-w-[14rem]">
         <DropdownMenuLabel className="text-[10.5px] font-bold uppercase tracking-[0.1em] text-fg3">
-          Trazas
+          {t("course.title")}
         </DropdownMenuLabel>
         <DropdownMenuItem
           onClick={() => setSelectedCourseId(null)}
@@ -49,7 +52,7 @@ export function CoursePicker({ className }: { className?: string }) {
             !selectedCourseId && "font-semibold",
           )}
         >
-          <span>Todas las trazas</span>
+          <span>{t("course.all")}</span>
           {!selectedCourseId && <Check className="h-3.5 w-3.5 text-primary" />}
         </DropdownMenuItem>
         <DropdownMenuSeparator />

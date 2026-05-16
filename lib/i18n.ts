@@ -111,6 +111,11 @@ const es: Dict = {
   "status.finished": "Finalizado",
   "status.dnf": "DNF",
   "status.preRace": "Pre-salida",
+
+  "course.title": "Trazas",
+  "course.all": "Todas las trazas",
+  "course.allShort": "Todas",
+  "course.select": "Seleccionar traza",
 };
 
 const en: Dict = {
@@ -212,6 +217,11 @@ const en: Dict = {
   "status.finished": "Finished",
   "status.dnf": "DNF",
   "status.preRace": "Pre-race",
+
+  "course.title": "Courses",
+  "course.all": "All courses",
+  "course.allShort": "All",
+  "course.select": "Select course",
 };
 
 const no: Dict = {
@@ -313,6 +323,11 @@ const no: Dict = {
   "status.finished": "Fullført",
   "status.dnf": "DNF",
   "status.preRace": "Pre-start",
+
+  "course.title": "Løyper",
+  "course.all": "Alle løyper",
+  "course.allShort": "Alle",
+  "course.select": "Velg løype",
 };
 
 const dictionaries: Record<Locale, Dict> = { es, en, no };
