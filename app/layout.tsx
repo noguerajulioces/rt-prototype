@@ -31,13 +31,13 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang={race.defaultLocale}
+      lang="en"
       suppressHydrationWarning
       className={`${geistSans.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="h-full bg-background text-foreground overflow-hidden">
         <ThemeProvider>
-          <LocaleProvider defaultLocale={race.defaultLocale}>
+          <LocaleProvider defaultLocale="en">
             <SettingsProvider>
               <ReplayProvider>
                 <CourseProvider courses={race.courses}>

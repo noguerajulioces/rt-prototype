@@ -1,6 +1,6 @@
 export type Locale = "es" | "en" | "no";
 
-export const locales: Locale[] = ["es", "en", "no"];
+export const locales: Locale[] = ["en", "es", "no"];
 
 export const localeLabels: Record<Locale, { native: string; flag: string }> = {
   es: { native: "Español", flag: "🇪🇸" },

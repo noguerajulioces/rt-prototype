@@ -59,6 +59,8 @@ export type Sponsor = {
   websiteLabel?: string;
 };
 
+export type RaceStatus = "live" | "past" | "upcoming";
+
 export type RaceInfo = {
   slug: string;
   name: string;
@@ -76,6 +78,11 @@ export type RaceInfo = {
   totalRunners: number;
   startedAt: string;
   elapsedSeconds: number;
+  status?: RaceStatus;
+  /* Optional winner shown on past-race cards. */
+  winner?: { name: string; country: string; time: number };
+  /* Optional finisher count shown on past-race cards. */
+  finishers?: number;
   sponsor?: Sponsor;
   /* Optional list of courses. When omitted, the race has a single course. */
   courses?: Course[];
@@ -98,6 +105,7 @@ export const race: RaceInfo = {
   totalRunners: 248,
   startedAt: "08:00",
   elapsedSeconds: 4 * 3600 + 17 * 60 + 32,
+  status: "live",
   sponsor: {
     name: "Nekrotrail Trail Series",
     tagline: "Trail · Ultra · 42K · Østmarka",
@@ -589,7 +597,116 @@ export function gradeAtKm(km: number): number {
   return (Math.atan2(e2 - e1, dHoriz) * 180) / Math.PI;
 }
 
-export const races: RaceInfo[] = [race];
+/* Additional races for the listing page. All slugs intentionally route to the
+   same race detail for prototype purposes. */
+const baseFromRace = (overrides: Partial<RaceInfo>): RaceInfo => ({
+  ...race,
+  ...overrides,
+});
+
+export const races: RaceInfo[] = [
+  race,
+  baseFromRace({
+    slug: "fjord-skyrace-2026",
+    name: "Fjord Skyrace",
+    edition: "2026",
+    date: "2026-06-21",
+    location: "Geiranger, Noruega",
+    country: "NO",
+    distance: 28,
+    elevationGain: 2100,
+    totalRunners: 312,
+    startedAt: "07:30",
+    elapsedSeconds: 2 * 3600 + 4 * 60 + 18,
+    status: "live",
+  }),
+  baseFromRace({
+    slug: "midnightsun-50",
+    name: "Midnightsun 50",
+    edition: "2026",
+    date: "2026-06-28",
+    location: "Tromsø, Noruega",
+    country: "NO",
+    distance: 50,
+    elevationGain: 1850,
+    totalRunners: 178,
+    startedAt: "22:00",
+    elapsedSeconds: 0,
+    status: "upcoming",
+  }),
+  baseFromRace({
+    slug: "nordmarka-trail-2025",
+    name: "Nordmarka Trail",
+    edition: "2025",
+    date: "2025-09-14",
+    location: "Oslo, Noruega",
+    country: "NO",
+    distance: 35,
+    elevationGain: 980,
+    totalRunners: 412,
+    status: "past",
+    winner: {
+      name: "Sigrid Halvorsen",
+      country: "NO",
+      time: 3 * 3600 + 12 * 60 + 8,
+    },
+    finishers: 384,
+  }),
+  baseFromRace({
+    slug: "lofoten-ultra-2025",
+    name: "Lofoten Ultra",
+    edition: "2025",
+    date: "2025-07-05",
+    location: "Lofoten, Noruega",
+    country: "NO",
+    distance: 100,
+    elevationGain: 5400,
+    totalRunners: 220,
+    status: "past",
+    winner: {
+      name: "Magnus Eriksen",
+      country: "NO",
+      time: 12 * 3600 + 48 * 60 + 22,
+    },
+    finishers: 168,
+  }),
+  baseFromRace({
+    slug: "bergen-fjelltrim-2024",
+    name: "Bergen Fjelltrim",
+    edition: "2024",
+    date: "2024-10-19",
+    location: "Bergen, Noruega",
+    country: "NO",
+    distance: 21,
+    elevationGain: 720,
+    totalRunners: 542,
+    status: "past",
+    winner: {
+      name: "Lars Sundby",
+      country: "NO",
+      time: 1 * 3600 + 38 * 60 + 41,
+    },
+    finishers: 538,
+  }),
+  baseFromRace({
+    slug: "trolltunga-skyrace-2024",
+    name: "Trolltunga Skyrace",
+    edition: "2024",
+    date: "2024-08-03",
+    location: "Odda, Noruega",
+    country: "NO",
+    distance: 42,
+    elevationGain: 3200,
+    totalRunners: 285,
+    status: "past",
+    winner: {
+      name: "Emma Lindqvist",
+      country: "SE",
+      time: 5 * 3600 + 24 * 60 + 10,
+    },
+    finishers: 261,
+  }),
+];
 
 export function getRace(slug: string): RaceInfo | undefined {
   return races.find((r) => r.slug === slug);
