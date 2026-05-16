@@ -81,10 +81,15 @@ export function RaceSponsorDialog({ race }: { race: RaceInfo }) {
           </div>
 
           <div className="absolute bottom-5 left-5 right-5">
-            <div className="rt-mono text-[10.5px] font-bold uppercase tracking-[0.12em] text-primary">
-              {sponsor.name}
+            <div className="flex items-center gap-2">
+              <span className="rt-mono inline-flex items-center rounded-full border border-[color-mix(in_oklch,var(--accent-color),transparent_55%)] bg-[color-mix(in_oklch,var(--accent-color),transparent_82%)] px-2 py-[2px] text-[9.5px] font-bold uppercase tracking-[0.16em] text-primary">
+                Sponsor
+              </span>
+              <span className="rt-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-fg2">
+                {sponsor.name}
+              </span>
             </div>
-            <DialogTitle className="mt-1.5 text-[26px] font-bold leading-[1.05] tracking-tight">
+            <DialogTitle className="mt-2 text-[26px] font-bold leading-[1.05] tracking-tight">
               {race.name}{" "}
               <span className="rt-mono text-fg2 font-semibold">
                 {race.edition}
