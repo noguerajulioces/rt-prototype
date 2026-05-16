@@ -27,29 +27,36 @@ type ReplayState = {
 
 const ReplayCtx = createContext<ReplayState | null>(null);
 
-const LIVE_EPSILON = 1;
-
 export function ReplayProvider({ children }: { children: React.ReactNode }) {
   const [raceTime, setRaceTimeState] = useState<number>(race.elapsedSeconds);
   const [playing, setPlaying] = useState(false);
+  const [liveMode, setLiveMode] = useState(false);
   const [speed, setSpeed] = useState(60);
   const [followedRunner, setFollowedRunner] = useState<string | null>(null);
   const raf = useRef<number | null>(null);
   const last = useRef<number | null>(null);
 
   const setRaceTime = useCallback((t: number) => {
+    setLiveMode(false);
     setRaceTimeState(Math.min(Math.max(t, 0), maxRunnerTime));
   }, []);
 
-  const togglePlay = useCallback(() => setPlaying((p) => !p), []);
+  const togglePlay = useCallback(() => {
+    setLiveMode(false);
+    setPlaying((p) => !p);
+  }, []);
 
   const goLive = useCallback(() => {
     setPlaying(false);
+    setLiveMode(true);
     setRaceTimeState(race.elapsedSeconds);
   }, []);
 
+  const running = playing || liveMode;
+  const effectiveSpeed = liveMode ? 1 : speed;
+
   useEffect(() => {
-    if (!playing) {
+    if (!running) {
       if (raf.current) cancelAnimationFrame(raf.current);
       raf.current = null;
       last.current = null;
@@ -60,9 +67,10 @@ export function ReplayProvider({ children }: { children: React.ReactNode }) {
       const dt = (ts - last.current) / 1000;
       last.current = ts;
       setRaceTimeState((prev) => {
-        const next = prev + dt * speed;
+        const next = prev + dt * effectiveSpeed;
         if (next >= maxRunnerTime) {
           setPlaying(false);
+          setLiveMode(false);
           return maxRunnerTime;
         }
         return next;
@@ -75,9 +83,7 @@ export function ReplayProvider({ children }: { children: React.ReactNode }) {
       raf.current = null;
       last.current = null;
     };
-  }, [playing, speed]);
-
-  const isLive = Math.abs(raceTime - race.elapsedSeconds) < LIVE_EPSILON;
+  }, [running, effectiveSpeed]);
 
   const value = useMemo<ReplayState>(
     () => ({
@@ -86,7 +92,7 @@ export function ReplayProvider({ children }: { children: React.ReactNode }) {
       playing,
       togglePlay,
       goLive,
-      isLive,
+      isLive: liveMode,
       maxTime: maxRunnerTime,
       speed,
       setSpeed,
@@ -99,7 +105,7 @@ export function ReplayProvider({ children }: { children: React.ReactNode }) {
       playing,
       togglePlay,
       goLive,
-      isLive,
+      liveMode,
       speed,
       followedRunner,
     ],
